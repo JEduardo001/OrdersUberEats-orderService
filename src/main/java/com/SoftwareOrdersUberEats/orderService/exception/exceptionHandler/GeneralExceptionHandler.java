@@ -48,7 +48,6 @@ public class GeneralExceptionHandler {
     // Catch-all
     @ExceptionHandler(Exception.class)
     public ResponseEntity<DtoResponseApiWithoutData> handleGeneralException(Exception ex){
-        ex.printStackTrace();
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
     }
 }

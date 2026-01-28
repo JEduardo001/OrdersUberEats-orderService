@@ -1,13 +1,9 @@
 package com.SoftwareOrdersUberEats.orderService.entity;
 
 
-import com.SoftwareOrdersUberEats.orderService.enums.statesResource.StatesResourceOrderEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.core.annotation.Order;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -18,12 +14,14 @@ import java.util.UUID;
 @Builder
 @Table(name = "products_order_table")
 @Entity
+@ToString(exclude = "order")
 public class ProductsOrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @ManyToOne()
+    @JsonBackReference
     @JoinColumn(name = "id_order")
     private OrderEntity order;
     private UUID idProduct;
