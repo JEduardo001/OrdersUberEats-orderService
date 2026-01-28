@@ -7,7 +7,5 @@ import lombok.NoArgsConstructor;
 
 public enum TypeEventEnum {
     CREATE,
-    DELETE,
-    UPDATE,
-    REMOVE
+    UPDATE
 }
