@@ -1,6 +1,7 @@
 package com.SoftwareOrdersUberEats.orderService.exception.exceptionHandler;
 
 import com.SoftwareOrdersUberEats.orderService.dto.apiResponse.DtoResponseApiWithoutData;
+import com.SoftwareOrdersUberEats.orderService.exception.order.CannotUpdateOrCanceledTerminatedOrderException;
 import com.SoftwareOrdersUberEats.orderService.exception.order.OrderNotFoundException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,10 @@ public class OrderExceptionHandler {
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<DtoResponseApiWithoutData> orderNotFoundException(OrderNotFoundException ex){
         return buildResponse(HttpStatus.NOT_FOUND, "Order not found");
+    }
+
+    @ExceptionHandler(CannotUpdateOrCanceledTerminatedOrderException.class)
+    public ResponseEntity<DtoResponseApiWithoutData> cannotUpdateOrCanceledTerminatedOrderException(CannotUpdateOrCanceledTerminatedOrderException ex){
+        return buildResponse(HttpStatus.BAD_REQUEST, "Cannot update canceled or terminated orders");
     }
 }

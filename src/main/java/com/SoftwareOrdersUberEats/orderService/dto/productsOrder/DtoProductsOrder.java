@@ -1,4 +1,4 @@
-package com.SoftwareOrdersUberEats.orderService.dto.order;
+package com.SoftwareOrdersUberEats.orderService.dto.productsOrder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

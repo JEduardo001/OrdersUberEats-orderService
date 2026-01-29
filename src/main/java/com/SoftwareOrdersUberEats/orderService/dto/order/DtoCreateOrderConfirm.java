@@ -1,5 +1,6 @@
 package com.SoftwareOrdersUberEats.orderService.dto.order;
 
+import com.SoftwareOrdersUberEats.orderService.dto.productsOrder.DtoProductsOrder;
 import com.SoftwareOrdersUberEats.orderService.enums.statusCreateResource.ResultCreateOrdenEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
