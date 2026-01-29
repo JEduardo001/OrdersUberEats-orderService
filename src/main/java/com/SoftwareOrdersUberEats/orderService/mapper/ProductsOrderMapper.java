@@ -1,6 +1,6 @@
 package com.SoftwareOrdersUberEats.orderService.mapper;
 
-import com.SoftwareOrdersUberEats.orderService.dto.order.DtoProductsOrder;
+import com.SoftwareOrdersUberEats.orderService.dto.productsOrder.DtoProductsOrder;
 import com.SoftwareOrdersUberEats.orderService.entity.ProductsOrderEntity;
 import org.mapstruct.Mapper;
 

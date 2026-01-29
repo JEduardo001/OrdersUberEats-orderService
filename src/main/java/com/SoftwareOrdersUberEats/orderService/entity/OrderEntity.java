@@ -15,7 +15,6 @@ import java.util.UUID;
 @Builder
 @Table(name = "order_table")
 @Entity
-@ToString(exclude = "products")
 public class OrderEntity {
 
     @Id
@@ -24,7 +23,8 @@ public class OrderEntity {
     private UUID idUser;
     private StatusResourceOrderEnum status;
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true,
+            cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.PERSIST})
     private List<ProductsOrderEntity> products;
     private Instant createAt;
     private Instant deleteAt;

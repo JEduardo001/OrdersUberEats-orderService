@@ -1,5 +1,6 @@
 package com.SoftwareOrdersUberEats.orderService.dto.order;
 
+import com.SoftwareOrdersUberEats.orderService.dto.productsOrder.DtoProductsOrder;
 import com.SoftwareOrdersUberEats.orderService.entity.ProductsOrderEntity;
 
 import jakarta.validation.constraints.NotNull;
