@@ -14,5 +14,6 @@ import java.util.List;
 public class DtoResponseApi<T> {
     private Integer status;
     private String message;
+    private String idCorrelation;
     private T data;
 }

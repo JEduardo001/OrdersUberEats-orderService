@@ -16,6 +16,7 @@ import com.SoftwareOrdersUberEats.orderService.repository.OrderRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.SoftwareOrdersUberEats.orderService.constant.TracerConstants.*;
+
 @Service
 @AllArgsConstructor
+@Slf4j
 public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
@@ -43,11 +47,11 @@ public class OrderService implements IOrderService {
     public DtoPageableResponse getAll(int page,int size){
         Page<OrderEntity> orders = orderRepository.findAll(PageRequest.of(page,size));
         List<DtoOrder> listOrders = orders.get().map(orderMapper::toDto).collect(Collectors.toList());
-      return new DtoPageableResponse<>(
-              orders.getTotalElements(),
-              orders.getTotalPages(),
-              listOrders
-      );
+        return new DtoPageableResponse(
+                orders.getTotalElements(),
+                orders.getTotalPages(),
+                listOrders
+        );
     }
 
     @Override
@@ -60,12 +64,19 @@ public class OrderService implements IOrderService {
         OrderEntity orderEntity = orderRepository.findById(request.getId()).orElseThrow(OrderNotFoundException::new);
 
         if(orderEntity.getStatus().equals(StatusResourceOrderEnum.CANCELED) ||
+
             orderEntity.getStatus().equals(StatusResourceOrderEnum.FINISHED)){
+
             throw new CannotUpdateOrCanceledTerminatedOrderException();
         }
         orderEntity.setStatus(request.getStatus());
         orderEntity.setDeleteAt(request.getStatus().equals(StatusResourceOrderEnum.DELETED) ? Instant.now() : null);
-        return orderMapper.toDto(orderRepository.save(orderEntity));
+
+        OrderEntity orderUpdated =  orderRepository.save(orderEntity);
+
+        log.info(MESSAGE_UPDATE_ORDER, orderEntity.getId());
+
+        return orderMapper.toDto(orderUpdated);
     }
 
     @Override
@@ -74,6 +85,7 @@ public class OrderService implements IOrderService {
 
         Set<ConstraintViolation<DtoCreateOrder>> violations = validator.validate(request);
         if (!violations.isEmpty()) {
+            log.info(MESSAGE_DATA_VALIDATION_CREATE_ORDER_ERROR);
             return DtoResultCreateOrder.builder()
                     .idOrder(null)
                     .status(ResultCreateOrdenEnum.VALIDATION_ERROR)
@@ -87,6 +99,7 @@ public class OrderService implements IOrderService {
                         .idUser(request.getIdUser())
                         .build()
         );
+        log.info(MESSAGE_SAVE_ORDER, order.getId());
 
         List<ProductsOrderEntity> products =
                 productsOrderMapper.toEntity(request.getProducts());
@@ -96,6 +109,7 @@ public class OrderService implements IOrderService {
         }
 
         productsOrderService.saveProductsOrder(products);
+        log.info(MESSAGE_LIST_PRODUCTS_ORDER_SAVED);
 
         return DtoResultCreateOrder.builder()
                 .idOrder(order.getId())
@@ -103,18 +117,20 @@ public class OrderService implements IOrderService {
                 .build();
     }
 
-
     @Override
     @Transactional
     public ResultChangeStatusOrderEnum changeStatusOrder(DtoCreateOrderConfirm request, StatusResourceOrderEnum status){
         Optional<OrderEntity> order = orderRepository.findById(request.getIdOrder());
 
         if(order.isEmpty()){
+            log.info(MESSAGE_ODER_NOT_FOUND);
             return ResultChangeStatusOrderEnum.ORDER_NOT_FOUND;
         }
 
         order.get().setStatus(status);
         orderRepository.save(order.get());
+        log.info(MESSAGE_UPDATE_STATUS_ORDER, order.get().getId());
+
         return ResultChangeStatusOrderEnum.UPDATED;
     }
 }

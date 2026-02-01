@@ -15,5 +15,6 @@ import java.util.UUID;
 public class DtoEvent<T> {
     private TypeEventEnum typeEvent;
     private UUID idEvent;
+    private String correlationId;
     private T data;
 }

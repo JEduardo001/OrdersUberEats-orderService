@@ -14,12 +14,15 @@ import com.SoftwareOrdersUberEats.orderService.service.OutboxEventService;
 import com.SoftwareOrdersUberEats.orderService.service.ProcessedEventService;
 import lombok.AllArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
+
+import static com.SoftwareOrdersUberEats.orderService.constant.TracerConstants.CORRELATION_HEADER;
 
 @Service
 @AllArgsConstructor
@@ -46,10 +49,11 @@ public class Consumer implements IConsumer {
         processedEventService.save(id);
     }
 
+
     @KafkaListener(topics = "order.requested", groupId = "orders")
     @Transactional
     @Override
-    public void handleCreateOrder(String rawEvent) {
+    public void handleCreateOrder(String rawEvent, @Header(CORRELATION_HEADER) String correlationId) {
 
         String json = parseRawEvent(rawEvent);
 
@@ -59,7 +63,6 @@ public class Consumer implements IConsumer {
         );
 
         if(isEventProcessed(dto.getIdEvent())){
-            System.out.println("ya existe: ");
             return;
         }
 
@@ -68,9 +71,11 @@ public class Consumer implements IConsumer {
         dtoCreateOrderConfirm.setIdOrder(result.getIdOrder());
         dtoCreateOrderConfirm.setResultEvent(result.getStatus());
 
+
         DtoEvent<DtoCreateOrderConfirm> event = DtoEvent.<DtoCreateOrderConfirm>builder()
                 .data(dtoCreateOrderConfirm)
                 .idEvent(UUID.randomUUID())
+                .correlationId(correlationId)
                 .typeEvent(TypeEventEnum.CREATE)
                 .build();
         outboxEventService.saveEvent(event, "order.created.pending");
@@ -80,7 +85,7 @@ public class Consumer implements IConsumer {
     @KafkaListener(topics = "inventory.stock.reserved", groupId = "orders")
     @Transactional
     @Override
-    public void handleStockReserved(String rawEvent) {
+    public void handleStockReserved(String rawEvent,@Header(CORRELATION_HEADER) String correlationId) {
         String json = parseRawEvent(rawEvent);
 
         DtoEvent<DtoCreateOrderConfirm> dto = new ObjectMapper().readValue(
@@ -97,6 +102,7 @@ public class Consumer implements IConsumer {
         if(result.equals(ResultChangeStatusOrderEnum.ORDER_NOT_FOUND)){
             DtoEvent<DtoCreateOrderConfirm> event = DtoEvent.<DtoCreateOrderConfirm>builder()
                     .data(dto.getData())
+                    .correlationId(correlationId)
                     .idEvent(UUID.randomUUID())
                     .typeEvent(TypeEventEnum.UPDATE)
                     .build();
@@ -110,12 +116,9 @@ public class Consumer implements IConsumer {
     @KafkaListener(topics = "inventory.stock.reserved.failed", groupId = "orders")
     @Transactional
     @Override
-    public void handleStockReservedFailed(String rawEvent) {
-        String json = rawEvent;
-        if (rawEvent.startsWith("\"") && rawEvent.endsWith("\"")) {
-            json = new ObjectMapper().readValue(rawEvent, String.class);
-        }
+    public void handleStockReservedFailed(String rawEvent,@Header(CORRELATION_HEADER) String correlationId) {
 
+        String json = parseRawEvent(rawEvent);
         DtoEvent<DtoCreateOrderConfirm> dto = new ObjectMapper().readValue(
                 json,
                 new TypeReference<DtoEvent<DtoCreateOrderConfirm>>() {}
