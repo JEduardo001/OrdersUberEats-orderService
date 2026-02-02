@@ -11,14 +11,6 @@ import static com.SoftwareOrdersUberEats.orderService.constant.TracerConstants.C
 @Service
 public class MappedDiagnosticService implements IMappedDiagnostic {
 
-    public void setIdCorrelation(String correlationId){
-        try {
-            MDC.put(CORRELATION_KEY, correlationId);
-        } finally {
-            MDC.remove(CORRELATION_KEY);
-        }
-    }
-
     public String getIdCorrelation(){
         return MDC.get(CORRELATION_KEY);
     }
