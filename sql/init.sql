@@ -9,7 +9,7 @@ VALUES (
        )
     ON CONFLICT (id) DO NOTHING;
 
--- 2. Insertar Productos de la Orden (Hijos)
+-- 2. Insertar Productos de la Orden
 INSERT INTO products_order_table (id, id_order, id_product, quantity_products, create_at, delete_at)
 VALUES (
            '550e8400-e29b-41d4-a716-446655440002',
@@ -21,13 +21,3 @@ VALUES (
        )
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO products_order_table (id, id_order, id_product, quantity_products, create_at, delete_at)
-VALUES (
-           '550e8400-e29b-41d4-a716-446655440003',
-           '550e8400-e29b-41d4-a716-446655440001',
-           '550e8400-e29b-41d4-a716-446655440101',
-           1,
-           CURRENT_TIMESTAMP,
-           NULL
-       )
-    ON CONFLICT (id) DO NOTHING;

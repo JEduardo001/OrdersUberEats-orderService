@@ -2,6 +2,7 @@ package com.SoftwareOrdersUberEats.orderService.entity;
 
 import com.SoftwareOrdersUberEats.orderService.enums.statusResource.StatusResourceOrderEnum;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,17 @@ public class OrderEntity {
     private UUID id;
     private UUID idUser;
     @Enumerated(EnumType.STRING)
+    @Schema(
+            example = "PENDING_TO_DO",
+            allowableValues = {
+                    "PENDING_TO_DO",
+                    "PENDING_TO_CONFIRM",
+                    "CANCELED",
+                    "DISABLE",
+                    "FINISHED",
+                    "DELETED"
+            }
+    )
     private StatusResourceOrderEnum status;
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true,
