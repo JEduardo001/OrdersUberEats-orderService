@@ -1,9 +1,5 @@
 Order Service
-
 Microservicio encargado de la gestión del ciclo de vida de los pedidos, incluyendo la creación, actualización de estados y coordinación asíncrona mediante el patrón Outbox.
-
-
-
 
 Stack Tecnológico
 Java: 21
@@ -16,12 +12,8 @@ Mensajería: Apache Kafka
 
 Service Discovery: Netflix Eureka
 
-
-
-
 API Endpoints
-
-Base Path: /api/v1/order
+Base Path: /api/order
 
 GET /: Obtiene lista paginada de pedidos (parámetros page y size).
 
