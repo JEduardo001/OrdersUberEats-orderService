@@ -21,6 +21,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private UUID idUser;
+    @Enumerated(EnumType.STRING)
     private StatusResourceOrderEnum status;
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", orphanRemoval = true,
