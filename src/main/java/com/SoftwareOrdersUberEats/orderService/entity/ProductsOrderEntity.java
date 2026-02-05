@@ -28,5 +28,4 @@ public class ProductsOrderEntity {
     private Integer quantityProducts;
     private Instant createAt;
     private Instant deleteAt;
-
 }
